@@ -14,11 +14,14 @@ class Twilio extends Adapter
 
   send: (ctx, strings...) ->
     message = strings.join "\n"
+    console.log "send"
+    @robot.logger.debug "Twilio.send #{inspect(ctx)}: strings: '#{strings.join("','")}'"
+
     @send_sms message, ctx.user.id, (err, body) =>
       if err or not body?
-        @robot.logger.debug "Error sending reply SMS: #{err}"
+        @robot.logger.info "Error sending reply SMS: #{err or "no body"}"
       else
-        @robot.logger.debug "Sending reply SMS: '#{message}' to #{ctx.user.id}"
+        @robot.logger.info "Sending reply SMS: '#{message}' to #{ctx.user.id}"
 
   reply: (user, strings...) ->
     @send user, str for str in strings
@@ -35,7 +38,7 @@ class Twilio extends Adapter
       payload.To = payload.To.replace(/\s/g, '+') if payload.To
 
       if payload.Body? and payload.From?
-        @robot.logger.debug "Received SMS: #{payload.Body} from #{payload.From}"
+        @robot.logger.info "Received SMS: '#{payload.Body}' from #{payload.From}"
         @receive_sms(payload.Body, payload.From)
 
       response.writeHead 200, 'Content-Type': 'text/plain'
@@ -61,10 +64,10 @@ class Twilio extends Adapter
           callback err
         else if res.statusCode is 201
           json = JSON.parse(body)
-          callback null, body
+          callback null, inspect(json)
         else
           json = JSON.parse(body)
-          callback body.message
+          callback new Error(inspect(json))
 
 exports.use = (robot) ->
   new Twilio robot
