@@ -53,6 +53,7 @@ class Twilio extends Adapter
 
   send_sms: (message, to, callback) ->
     auth = new Buffer(@sid + ':' + @token).toString("base64")
+    message = message.slice(0,159) if message.length>160
     data = QS.stringify From: @from, To: to, Body: message
 
     @robot.http("https://api.twilio.com")
