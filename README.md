@@ -1,5 +1,7 @@
 # Hubot Twilio Adapter
 
+**charlesjolley:** Minor edits to work with latest node APIs, etc.
+
 ## Description
 
 This is the [Twilio](http://twilio.com) adapter for hubot that allows you to
